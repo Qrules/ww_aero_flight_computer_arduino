@@ -15,7 +15,7 @@
 //--------------------------------------------------------------------
 // DEFINES
 //--------------------------------------------------------------------
-// #define SIMULATING 1
+ #define SIMULATING 1
 // #define DEBUG 1 
 
 //--------------------------------------------------------------------
@@ -29,7 +29,7 @@
 #define BIG_BUFFER_SIZE 200
 #define LITTLE_BUFFER_SIZE 20
 #define MINIMUM_GPS_SENTENCE_LENGTH 20 // Arbitrarily chosen
-#define AUTOMATIC_AIRPLANE_RELEASE_ALTITUDE_FT 91000
+#define AUTOMATIC_AIRPLANE_RELEASE_ALTITUDE_FT 117500.0
 
 #ifdef SIMULATING
   #define SIMULATED_CLIMBING_ALTITUDE_DELTA 5000.0f // 1000.0f
@@ -196,7 +196,7 @@ void ProcessGpggaSentence()
 #ifdef SIMULATING
     altitudeFt = simulatedAltitude;
     
-    if (altitudeFt > 95000.0)  // TODO:  make a constant out of apogee
+    if (altitudeFt > AUTOMATIC_AIRPLANE_RELEASE_ALTITUDE_FT)  // TODO:  make a constant out of apogee
       altitudeDelta *= -1.0;
     
     simulatedAltitude += altitudeDelta; 
@@ -504,7 +504,12 @@ void WriteLoggerLine(char * line)
 //--------------------------------------------------------------------
 void ReleaseAirplane()
 {
+  char charVal[20];
+  dtostrf(maxAltitudeFt, 4, 3, charVal); 
   WriteLoggerLine("GOT COMMAND TO RELEASE AIRPLANE!");
+  WriteLoggerLine(charVal);
+
+
 
 /*  
   // Turn the stepper motor
