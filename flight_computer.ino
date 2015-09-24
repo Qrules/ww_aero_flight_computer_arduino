@@ -11,11 +11,11 @@
 // INCLUDES
 //--------------------------------------------------------------------
 #include "SoftwareSerial.h"
-
 //--------------------------------------------------------------------
 // DEFINES
 //--------------------------------------------------------------------
  #define SIMULATING 1
+ #define RELAYPORT 8
 // #define DEBUG 1 
 
 //--------------------------------------------------------------------
@@ -29,8 +29,7 @@
 #define BIG_BUFFER_SIZE 200
 #define LITTLE_BUFFER_SIZE 20
 #define MINIMUM_GPS_SENTENCE_LENGTH 20 // Arbitrarily chosen
-#define AUTOMATIC_AIRPLANE_RELEASE_ALTITUDE_FT 117500.0
-
+#define AUTOMATIC_AIRPLANE_RELEASE_ALTITUDE_FT 120000.0
 #ifdef SIMULATING
   #define SIMULATED_CLIMBING_ALTITUDE_DELTA 5000.0f // 1000.0f
   #define SIMULATED_GROUND_ALTITUDE_FT 900.0f
@@ -135,7 +134,10 @@ void setup()
   Serial.begin(115200); // for debugging
   gps.begin(4800); // Use Soft Serial object to talk read GPS
   pinMode(LED_PIN, OUTPUT); 
+  pinMode(RELAYPORT, OUTPUT);
   delay(3000);
+
+  digitalWrite(RELAYPORT, HIGH);
   
 #ifdef DEBUG
   delay(1000);  
@@ -221,12 +223,12 @@ void ProcessGpggaSentence()
   if (!airplaneReleased && altitudeFt >= AUTOMATIC_AIRPLANE_RELEASE_ALTITUDE_FT)
     releaseAirplane = true; 
      
-  /*
+  
   // TODO:  REMOVE THIS FOR RECORD BREAKER!  WE DON'T WANT TO RELEASE OUR GOOD AIRPLANE
   //        IF WE DON'T GET ABOVE THE CURRENT RECORD!
-  if (!airplaneReleased && altitudeFt < (maxAltitudeFt - 20000)) // Make sure the balloon has popped for sure
+  if (!airplaneReleased && altitudeFt < (maxAltitudeFt - 2000)) // Make sure the balloon has popped for sure
     releaseAirplane = true; 
-  */
+  
   
 #ifdef DEBUG      
   Serial.print("altM: ");
@@ -482,6 +484,8 @@ void WriteLoggerLine(char * line)
   Serial.print(",");
   Serial.print(ms);
   Serial.print(",");
+   Serial.print(altitudeFt);
+  Serial.print(",");
   Serial.println(line);
   
 #ifdef DEBUG
@@ -491,6 +495,8 @@ void WriteLoggerLine(char * line)
   Serial.print(gpsTime);
   Serial.print(",");
   Serial.print(ms);
+  Serial.print(",");
+  Serial.print(altitudeFt);
   Serial.print(",");
   Serial.println(line);
   Serial.println("------------------------------------------------------------------------------------");
@@ -505,11 +511,14 @@ void WriteLoggerLine(char * line)
 void ReleaseAirplane()
 {
   char charVal[20];
-  dtostrf(maxAltitudeFt, 4, 3, charVal); 
+  dtostrf(altitudeFt, 4, 3, charVal); 
   WriteLoggerLine("GOT COMMAND TO RELEASE AIRPLANE!");
   WriteLoggerLine(charVal);
 
-
+  //Turn off relay
+  digitalWrite(RELAYPORT, LOW);
+  WriteLoggerLine("Relay turned off!");
+  delay(3000);
 
 /*  
   // Turn the stepper motor
