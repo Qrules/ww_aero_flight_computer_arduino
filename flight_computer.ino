@@ -15,7 +15,6 @@
 // DEFINES
 //--------------------------------------------------------------------
  #define SIMULATING 1
- #define RELAYPORT 8
 // #define DEBUG 1 
 
 //--------------------------------------------------------------------
@@ -23,6 +22,7 @@
 //--------------------------------------------------------------------
 #define GPS_RECV_PIN 2     // from Byonics GPS receiver
 #define LED_PIN 13
+#define RELAY_PIN 8
 #define LOGGER_BAUD_RATE 9600
 #define LOGGER_ESCAPE_CHAR '$'
 #define LOGGER_MAX_CHAR_READ_TRIES 100
@@ -134,10 +134,10 @@ void setup()
   Serial.begin(115200); // for debugging
   gps.begin(4800); // Use Soft Serial object to talk read GPS
   pinMode(LED_PIN, OUTPUT); 
-  pinMode(RELAYPORT, OUTPUT);
+  pinMode(RELAY_PIN, OUTPUT);
   delay(3000);
 
-  digitalWrite(RELAYPORT, HIGH);
+  digitalWrite(RELAY_PIN, HIGH);
   
 #ifdef DEBUG
   delay(1000);  
@@ -516,7 +516,7 @@ void ReleaseAirplane()
   WriteLoggerLine(charVal);
 
   //Turn off relay
-  digitalWrite(RELAYPORT, LOW);
+  digitalWrite(RELAY_PIN, LOW);
   WriteLoggerLine("Relay turned off!");
   delay(3000);
 
