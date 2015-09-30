@@ -14,8 +14,8 @@
 //--------------------------------------------------------------------
 // DEFINES
 //--------------------------------------------------------------------
- #define SIMULATING 1
-// #define DEBUG 1 
+// #define SIMULATING 1
+ #define DEBUG 1 
 
 //--------------------------------------------------------------------
 // CONSTANTS
@@ -29,7 +29,7 @@
 #define BIG_BUFFER_SIZE 200
 #define LITTLE_BUFFER_SIZE 20
 #define MINIMUM_GPS_SENTENCE_LENGTH 20 // Arbitrarily chosen
-#define AUTOMATIC_AIRPLANE_RELEASE_ALTITUDE_FT 120000.0
+#define AUTOMATIC_AIRPLANE_RELEASE_ALTITUDE_FT 100000.0
 #ifdef SIMULATING
   #define SIMULATED_CLIMBING_ALTITUDE_DELTA 5000.0f // 1000.0f
   #define SIMULATED_GROUND_ALTITUDE_FT 900.0f
@@ -399,11 +399,12 @@ void GetNextGpsLine()
 // ReadGpsChar
 //--------------------------------------------------------------------
 char ReadGpsChar()
-{
+{   Serial.println("If you see this, the gps isn't found");
     while (!gps.available())
       delay(10);
-    
-    return gps.read();  
+    char c = gps.read();
+    Serial.print(c);
+    return c;  
 }
 
 //--------------------------------------------------------------------
@@ -565,4 +566,5 @@ extern int __heap_start, *__brkval;
   int v; 
   return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
 }
+
 
